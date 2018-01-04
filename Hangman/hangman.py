@@ -3,15 +3,21 @@
 import random
 import sys
 
-
+# Set up some global variables. TODO: Add ability to play multiple games and move this into the Main function
 with open('hangmanwords.txt', mode='rt', encoding='utf-8') as w:
     word_list = [line.strip() for line in w]
 
 play_word = word_list[random.randint(0, len(word_list) - 1)]
 puzzle = ['- '] * len(play_word)
+letters_played = []
 
 
 def validate_input(a):
+    """
+    Validates the input from the user, checking if it's empty, multiple letters or a non-alphnumeric value
+    :param a: letter input
+    :return: invalid flag
+    """
     invalid = 0
     if len(a) != 1:
         invalid = 1
@@ -23,7 +29,16 @@ def validate_input(a):
 
 
 def check_for_match(l):
+    """
+    Checks whether the inputted letter matches against the play_word and, if so, how many times it is in the word
+    :param l: letter input
+    :return: match flag
+    """
     match = 0
+    # TODO: Track if a letter has already been played and return a message to the user (don't decrement bad guess)
+    # if l in letters_played:
+    #     print("You've already played {}".format(l.upper()))
+
     if l in play_word:
         match = 1
         x = play_word.count(l)
@@ -35,6 +50,12 @@ def check_for_match(l):
 
 
 def remaining_puzzle(p, count):
+    """
+    Calculates the remaining puzzle visual (- - - -) by incrementally slicing the play_word and checking for matches
+    :param p: letter input
+    :param count: number of times letter appears in word (from check_for_match)
+    :return: newly-calculated puzzle visual
+    """
     ind_start = 0
     ind_end = len(puzzle)+1
     for i in range(count):
