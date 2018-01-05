@@ -68,7 +68,7 @@ def remaining_puzzle(p, count):
     return puzzle
 
 
-def main(test, bad_guesses):
+def main(test=0, bad_guesses=5):
     num_bad_guesses = bad_guesses
 
     if test:
@@ -79,7 +79,7 @@ def main(test, bad_guesses):
     print("You have {0} bad guesses remaining".format(num_bad_guesses))
 
     while num_bad_guesses:
-        guess = input("Guess a letter: ").strip()
+        guess = input("Guess a letter: ")
         c = validate_input(guess)
         if not c:
             b = check_for_match(guess)
@@ -96,14 +96,8 @@ def main(test, bad_guesses):
 
 
 if __name__ == '__main__':
-    try:
-        main(test=sys.argv[1],
-             bad_guesses=sys.argv[2])
-    except IndexError:
-        # print("Two arguments expected. Running with default values\n")
-        main(test=0,
-             bad_guesses=5)
-
+    main(test=int(sys.argv[1]),
+         bad_guesses=int(sys.argv[2]))
 
 
 
