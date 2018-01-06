@@ -2,6 +2,7 @@
 
 import re
 import subprocess
+import os
 
 test_text = list(r'''
 \\qa-vault-35.testco.com\mounted\vol20\
@@ -33,20 +34,21 @@ for volume in active_volumes_list:
 # For now, use the test_text value
 
 # Create regex to find Total Available Bytes
-free_bytes = re.compile(r'(Total # of free bytes\s*: )(\d+)\n')
+free_bytes = re.compile(r'(Total # of free bytes\s*: )(\d+)')
 
 i = 0
 for volume in storage.keys():
-    # TODO: Change the source of chunk to the return value of fsutil
-    # chunk = fsutil volume diskfree volume
-    # chunk = test_text[i]                              # Test code: can be modified once real call is implemented
-    ps_str = r'fsutil volume diskfree {}'.format(volume)
-    process = subprocess.Popen(["powershell", ps_str], stdout=subprocess.PIPE)
-    chunk = process.communicate()[0]
+    if os.name == 'nt': # If this is running in Windows
+        ps_str = r'fsutil volume diskfree {}'.format(volume)
+        print(ps_str)
+        process = subprocess.Popen(["powershell", ps_str], stdout=subprocess.PIPE)
+        chunk = str(process.communicate()[0])
+    else:
+        chunk = test_text[i]                              # Test code: can be modified once real call is implemented
+
     mo = free_bytes.search(chunk)
     storage_gb = ((int(mo.group(2))/1024)/1024)/1024  # Convert byte value to GB
     storage[volume] = str(round(storage_gb, 2))
-    # i += 1                                            # Test code: can be removed once real call is implemented
     print('Volume: {0} has available storage: {1} GB'.format(volume, storage[volume]))
 
 
