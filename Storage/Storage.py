@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 import re
+import subprocess
 
 test_text = list(r'''
 \\qa-vault-35.testco.com\mounted\vol20\
@@ -38,11 +39,14 @@ i = 0
 for volume in storage.keys():
     # TODO: Change the source of chunk to the return value of fsutil
     # chunk = fsutil volume diskfree volume
-    chunk = test_text[i]                              # Test code: can be modified once real call is implemented
+    # chunk = test_text[i]                              # Test code: can be modified once real call is implemented
+    ps_str = r'fsutil volume diskfree {}'.format(volume)
+    process = subprocess.Popen(["powershell", ps_str], stdout=subprocess.PIPE)
+    chunk = process.communicate()[0]
     mo = free_bytes.search(chunk)
     storage_gb = ((int(mo.group(2))/1024)/1024)/1024  # Convert byte value to GB
     storage[volume] = str(round(storage_gb, 2))
-    i += 1                                            # Test code: can be removed once real call is implemented
+    # i += 1                                            # Test code: can be removed once real call is implemented
     print('Volume: {0} has available storage: {1} GB'.format(volume, storage[volume]))
 
 
